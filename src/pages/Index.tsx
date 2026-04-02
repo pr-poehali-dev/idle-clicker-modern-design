@@ -44,9 +44,9 @@ interface Achievement {
   type: "taps" | "gold" | "stage" | "prestiges";
 }
 
-const HERO_IMAGE = "https://cdn.poehali.dev/projects/68d04eb9-a558-4e00-920c-2c945471895e/files/1f6fddd4-9736-4459-b886-f3eff630cf67.jpg";
+const HERO_IMAGE = "https://cdn.poehali.dev/projects/68d04eb9-a558-4e00-920c-2c945471895e/files/719119e5-9481-4b48-bd19-066e089fd19b.jpg";
 const BG_IMAGE = "https://cdn.poehali.dev/projects/68d04eb9-a558-4e00-920c-2c945471895e/files/7ccbc1b2-8f32-4006-9ee3-6aa7508671b4.jpg";
-const BOSS_IMAGE = "https://cdn.poehali.dev/projects/68d04eb9-a558-4e00-920c-2c945471895e/files/e0a5ea9e-516c-48db-9209-8a00e7e6bf05.jpg";
+const BOSS_IMAGE = "https://cdn.poehali.dev/projects/68d04eb9-a558-4e00-920c-2c945471895e/files/4fc9776c-1464-41f4-9e89-2b4b0c6e9c31.jpg";
 
 const INITIAL_UPGRADES: Upgrade[] = [
   { id: "sword", name: "Клинок Бурь", desc: "+5 урона за уровень", icon: "⚔️", baseCost: 50, level: 0, maxLevel: 100, effect: "+5 тап урона", multiplier: 5, type: "tap" },
