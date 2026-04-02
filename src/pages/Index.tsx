@@ -44,9 +44,9 @@ interface Achievement {
   type: "taps" | "gold" | "stage" | "prestiges";
 }
 
-const HERO_IMAGE = "https://cdn.poehali.dev/projects/68d04eb9-a558-4e00-920c-2c945471895e/files/719119e5-9481-4b48-bd19-066e089fd19b.jpg";
+const HERO_IMAGE = "https://cdn.poehali.dev/projects/68d04eb9-a558-4e00-920c-2c945471895e/files/93ead2db-8b96-4200-bf03-1b7940ce4dd6.jpg";
 const BG_IMAGE = "https://cdn.poehali.dev/projects/68d04eb9-a558-4e00-920c-2c945471895e/files/7ccbc1b2-8f32-4006-9ee3-6aa7508671b4.jpg";
-const BOSS_IMAGE = "https://cdn.poehali.dev/projects/68d04eb9-a558-4e00-920c-2c945471895e/files/4fc9776c-1464-41f4-9e89-2b4b0c6e9c31.jpg";
+const BOSS_IMAGE = "https://cdn.poehali.dev/projects/68d04eb9-a558-4e00-920c-2c945471895e/files/90a63753-efab-4cd1-bcd0-bb30e0c1c8bc.jpg";
 
 const INITIAL_UPGRADES: Upgrade[] = [
   { id: "sword", name: "Клинок Бурь", desc: "+5 урона за уровень", icon: "⚔️", baseCost: 50, level: 0, maxLevel: 100, effect: "+5 тап урона", multiplier: 5, type: "tap" },
@@ -401,11 +401,12 @@ export default function Index() {
                   alt="Enemy"
                   className="object-contain relative z-10"
                   style={{
-                    width: isBoss ? 165 : 138,
-                    height: isBoss ? 165 : 138,
+                    width: isBoss ? 175 : 150,
+                    height: isBoss ? 175 : 150,
+                    mixBlendMode: "lighten",
                     filter: isBoss
-                      ? `hue-rotate(${stage * 12}deg) brightness(1.3) contrast(1.1) drop-shadow(0 0 28px rgba(255,50,50,0.8)) drop-shadow(0 0 60px rgba(255,0,0,0.4))`
-                      : `hue-rotate(${stage * 18}deg) brightness(1.15) drop-shadow(0 0 20px rgba(180,0,255,0.7)) drop-shadow(0 0 40px rgba(120,0,200,0.4))`,
+                      ? `hue-rotate(${stage * 12}deg) brightness(1.35) contrast(1.15) drop-shadow(0 0 30px rgba(255,50,50,0.9)) drop-shadow(0 0 65px rgba(255,0,0,0.5))`
+                      : `hue-rotate(${stage * 18}deg) brightness(1.25) contrast(1.1) drop-shadow(0 0 22px rgba(180,0,255,0.8)) drop-shadow(0 0 45px rgba(120,0,200,0.5))`,
                     transform: `scale(${Math.min(0.88 + stage * 0.012, 1.35)})`,
                   }}
                   draggable={false}
@@ -470,11 +471,12 @@ export default function Index() {
                   alt="Hero"
                   className="object-contain relative z-10 tap-hero"
                   style={{
-                    width: 148,
-                    height: 148,
+                    width: 158,
+                    height: 158,
+                    mixBlendMode: "lighten",
                     filter: prestiges > 0
-                      ? `drop-shadow(0 0 25px rgba(255,200,0,0.9)) drop-shadow(0 0 50px rgba(255,120,0,0.6)) brightness(1.2) contrast(1.05)`
-                      : `drop-shadow(0 0 20px rgba(255,180,0,0.75)) drop-shadow(0 0 40px rgba(255,100,0,0.4)) brightness(1.1)`,
+                      ? `drop-shadow(0 0 28px rgba(255,210,0,1)) drop-shadow(0 0 55px rgba(255,130,0,0.7)) brightness(1.3) contrast(1.1)`
+                      : `drop-shadow(0 0 22px rgba(255,185,0,0.85)) drop-shadow(0 0 45px rgba(255,110,0,0.5)) brightness(1.15) contrast(1.05)`,
                   }}
                   draggable={false}
                 />
