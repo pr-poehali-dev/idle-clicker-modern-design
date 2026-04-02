@@ -104,6 +104,49 @@ function formatNumber(n: number): string {
 
 const SAVE_KEY = "tap_legends_save";
 
+function maxOutSave() {
+  const maxSave = {
+    gold: 999999999,
+    totalGold: 999999999,
+    stage: 100,
+    totalTaps: 99999,
+    prestiges: 10,
+    upgrades: [
+      { id: "sword",  level: 100 },
+      { id: "ring",   level: 50  },
+      { id: "armor",  level: 100 },
+      { id: "boots",  level: 50  },
+      { id: "helm",   level: 30  },
+      { id: "cape",   level: 20  },
+      { id: "amulet", level: 80  },
+      { id: "staff",  level: 60  },
+    ],
+    relics: [
+      { id: "r1", owned: 50 },
+      { id: "r2", owned: 50 },
+      { id: "r3", owned: 50 },
+      { id: "r4", owned: 50 },
+      { id: "r5", owned: 50 },
+      { id: "r6", owned: 50 },
+    ],
+    achievements: [
+      { id: "a1", unlocked: true },
+      { id: "a2", unlocked: true },
+      { id: "a3", unlocked: true },
+      { id: "a4", unlocked: true },
+      { id: "a5", unlocked: true },
+      { id: "a6", unlocked: true },
+      { id: "a7", unlocked: true },
+      { id: "a8", unlocked: true },
+    ],
+    soundOn: true,
+    graphicsOn: true,
+    vibrationOn: true,
+  };
+  localStorage.setItem(SAVE_KEY, JSON.stringify(maxSave));
+  window.location.reload();
+}
+
 function loadSave() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
@@ -906,6 +949,13 @@ export default function Index() {
                 <p className="text-xs text-green-400 font-display font-semibold">Прогресс сохраняется автоматически</p>
               </div>
               <p className="text-[10px] text-muted-foreground">Версия 0.1.0 Alpha • Tap Legends</p>
+              <button
+                onClick={() => maxOutSave()}
+                className="w-full py-3 rounded-xl font-display font-bold text-base tracking-wide transition-all active:scale-95"
+                style={{ background: "linear-gradient(135deg,#FFD700,#FF8C00)", color: "#1a0800", boxShadow: "0 0 20px rgba(255,180,0,0.45)" }}
+              >
+                ⚡ ПРОКАЧАТЬ ДО МАКСИМУМА
+              </button>
               <button
                 onClick={() => {
                   if (confirm("Сбросить весь прогресс? Это нельзя отменить.")) {
