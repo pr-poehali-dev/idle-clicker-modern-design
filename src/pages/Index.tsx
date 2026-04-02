@@ -102,16 +102,49 @@ function formatNumber(n: number): string {
   return Math.floor(n).toString();
 }
 
+const SAVE_KEY = "tap_legends_save";
+
+function loadSave() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function mergeSavedUpgrades(saved: Upgrade[]): Upgrade[] {
+  return INITIAL_UPGRADES.map(u => {
+    const s = saved.find(su => su.id === u.id);
+    return s ? { ...u, level: s.level } : u;
+  });
+}
+
+function mergeSavedRelics(saved: Relic[]): Relic[] {
+  return INITIAL_RELICS.map(r => {
+    const s = saved.find(sr => sr.id === r.id);
+    return s ? { ...r, owned: s.owned } : r;
+  });
+}
+
+function mergeSavedAchievements(saved: Achievement[]): Achievement[] {
+  return INITIAL_ACHIEVEMENTS.map(a => {
+    const s = saved.find(sa => sa.id === a.id);
+    return s ? { ...a, unlocked: s.unlocked } : a;
+  });
+}
+
 export default function Index() {
+  const saved = loadSave();
+
   const [screen, setScreen] = useState<Screen>("game");
-  const [gold, setGold] = useState(0);
-  const [totalGold, setTotalGold] = useState(0);
-  const [stage, setStage] = useState(1);
-  const [totalTaps, setTotalTaps] = useState(0);
-  const [prestiges, setPrestiges] = useState(0);
-  const [relics, setRelics] = useState<Relic[]>(INITIAL_RELICS);
-  const [upgrades, setUpgrades] = useState<Upgrade[]>(INITIAL_UPGRADES);
-  const [achievements, setAchievements] = useState<Achievement[]>(INITIAL_ACHIEVEMENTS);
+  const [gold, setGold] = useState<number>(saved?.gold ?? 0);
+  const [totalGold, setTotalGold] = useState<number>(saved?.totalGold ?? 0);
+  const [stage, setStage] = useState<number>(saved?.stage ?? 1);
+  const [totalTaps, setTotalTaps] = useState<number>(saved?.totalTaps ?? 0);
+  const [prestiges, setPrestiges] = useState<number>(saved?.prestiges ?? 0);
+  const [relics, setRelics] = useState<Relic[]>(saved?.relics ? mergeSavedRelics(saved.relics) : INITIAL_RELICS);
+  const [upgrades, setUpgrades] = useState<Upgrade[]>(saved?.upgrades ? mergeSavedUpgrades(saved.upgrades) : INITIAL_UPGRADES);
+  const [achievements, setAchievements] = useState<Achievement[]>(saved?.achievements ? mergeSavedAchievements(saved.achievements) : INITIAL_ACHIEVEMENTS);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [bossShake, setBossShake] = useState(false);
   const [heroTap, setHeroTap] = useState(false);
@@ -120,9 +153,9 @@ export default function Index() {
   const [isBoss, setIsBoss] = useState(false);
   const [prestigeConfirm, setPrestigeConfirm] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
-  const [soundOn, setSoundOn] = useState(true);
-  const [graphicsOn, setGraphicsOn] = useState(true);
-  const [vibrationOn, setVibrationOn] = useState(true);
+  const [soundOn, setSoundOn] = useState<boolean>(saved?.soundOn ?? true);
+  const [graphicsOn, setGraphicsOn] = useState<boolean>(saved?.graphicsOn ?? true);
+  const [vibrationOn, setVibrationOn] = useState<boolean>(saved?.vibrationOn ?? true);
   const [shopFilter, setShopFilter] = useState<"all" | "tap" | "passive" | "hero">("all");
   const particleId = useRef(0);
   const dpsInterval = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -150,6 +183,21 @@ export default function Index() {
     setBossHp(stageHp);
     setIsBoss(stage % 5 === 0);
   }, [stage]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify({
+          gold, totalGold, stage, totalTaps, prestiges,
+          relics: relics.map(r => ({ id: r.id, owned: r.owned })),
+          upgrades: upgrades.map(u => ({ id: u.id, level: u.level })),
+          achievements: achievements.map(a => ({ id: a.id, unlocked: a.unlocked })),
+          soundOn, graphicsOn, vibrationOn,
+        }));
+      } catch (e) { void e; }
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [gold, totalGold, stage, totalTaps, prestiges, relics, upgrades, achievements, soundOn, graphicsOn, vibrationOn]);
 
   const dealDamage = useCallback((dmg: number, isTap: boolean) => {
     setBossHp(prev => {
@@ -852,8 +900,23 @@ export default function Index() {
               </div>
             </div>
 
-            <div className="game-card p-3">
-              <p className="text-xs text-muted-foreground text-center">Версия 0.1.0 Alpha • Tap Legends</p>
+            <div className="game-card p-3 flex flex-col items-center gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-green-400 text-sm">💾</span>
+                <p className="text-xs text-green-400 font-display font-semibold">Прогресс сохраняется автоматически</p>
+              </div>
+              <p className="text-[10px] text-muted-foreground">Версия 0.1.0 Alpha • Tap Legends</p>
+              <button
+                onClick={() => {
+                  if (confirm("Сбросить весь прогресс? Это нельзя отменить.")) {
+                    localStorage.removeItem(SAVE_KEY);
+                    window.location.reload();
+                  }
+                }}
+                className="mt-1 px-4 py-1.5 rounded-xl font-display text-xs font-bold text-destructive border border-destructive/40 hover:bg-destructive/10 transition-all active:scale-95"
+              >
+                🗑️ Сбросить прогресс
+              </button>
             </div>
           </div>
         </div>
