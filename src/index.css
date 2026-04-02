@@ -376,13 +376,13 @@
 
 .tap-hero {
   cursor: pointer;
-  filter: drop-shadow(0 0 20px hsl(38 100% 55% / 0.5));
-  transition: filter 0.2s ease;
+  transition:
+    filter 0.15s ease,
+    transform 0.1s ease;
 }
 
 .tap-hero:active {
-  filter: drop-shadow(0 0 35px hsl(38 100% 55% / 0.9));
-  animation: bounce-tap 0.15s ease-out;
+  filter: drop-shadow(0 4px 32px rgba(255, 200, 0, 1)) brightness(1.35) !important;
 }
 
 .particle {

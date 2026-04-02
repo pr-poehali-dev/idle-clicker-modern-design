@@ -282,32 +282,10 @@ export default function Index() {
       {/* ===== GAME SCREEN ===== */}
       {screen === "game" && (
         <div className="flex flex-col h-full">
-          {/* Top Bar */}
-          <div className="flex items-center justify-between px-4 pt-3 pb-2 z-10">
-            <div className="flex items-center gap-2">
-              <div className="bg-card border border-border rounded-xl px-3 py-1.5 flex items-center gap-2">
-                <span className="text-lg">🪙</span>
-                <span className="font-display text-gold font-bold text-lg leading-none">{formatNumber(gold)}</span>
-              </div>
-              <div className="bg-card border border-border rounded-xl px-3 py-1.5 flex items-center gap-2">
-                <span className="text-base">⚡</span>
-                <span className="font-display text-cyan text-sm font-semibold">{formatNumber(passiveDps)}/с</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="bg-card border border-border rounded-xl px-3 py-1.5 flex items-center gap-2">
-                <span className="text-base">🗺️</span>
-                <span className="font-display text-white font-bold text-sm">Этап {stage}</span>
-              </div>
-              <button onClick={() => setScreen("settings")} className="w-9 h-9 bg-card border border-border rounded-xl flex items-center justify-center">
-                <Icon name="Settings" size={18} className="text-muted-foreground" />
-              </button>
-            </div>
-          </div>
 
-          {/* Battle Arena */}
+          {/* ── BATTLE ARENA (full bleed, tap zone) ── */}
           <div
-            className="relative flex-1 flex flex-col items-center justify-center overflow-hidden"
+            className="relative flex-1 flex flex-col overflow-hidden"
             onTouchStart={handleTap}
             onClick={handleTap}
             style={{ cursor: "pointer" }}
@@ -315,95 +293,191 @@ export default function Index() {
             {/* Background */}
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${BG_IMAGE})`, filter: "brightness(0.5) saturate(1.3)" }}
+              style={{ backgroundImage: `url(${BG_IMAGE})`, filter: "brightness(0.55) saturate(1.5)" }}
             />
-            <div className="background-overlay" />
+            {/* Vignette */}
+            <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 30%, rgba(5,5,20,0.75) 100%)" }} />
+            {/* Bottom fade */}
+            <div className="absolute bottom-0 left-0 right-0 h-32" style={{ background: "linear-gradient(to top, hsl(240 20% 8%), transparent)" }} />
 
-            {/* Boss banner */}
-            {isBoss && (
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20">
-                <div className="bg-crimson/90 border border-red-400 rounded-xl px-5 py-1 font-display font-bold text-white text-sm tracking-widest animate-pulse">
-                  ⚔️ БОСС ЭТАПА {stage}
+            {/* ── TOP HUD ── */}
+            <div className="relative z-20 flex items-start justify-between px-3 pt-3">
+              {/* Left: gold + dps */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center gap-1.5 rounded-2xl px-3 py-1.5" style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,190,0,0.25)" }}>
+                  <span className="text-base">🪙</span>
+                  <span className="font-display text-gold font-bold text-lg leading-none tracking-wide">{formatNumber(gold)}</span>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-2xl px-3 py-1" style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(8px)", border: "1px solid rgba(0,220,255,0.2)" }}>
+                  <span className="text-xs">⚡</span>
+                  <span className="font-display text-cyan text-xs font-semibold">{formatNumber(passiveDps)}/с</span>
                 </div>
               </div>
-            )}
 
-            {/* HP Bar */}
-            <div className="absolute top-10 left-4 right-4 z-20">
+              {/* Center: stage badge */}
+              <div className="flex flex-col items-center gap-1">
+                <div className="rounded-2xl px-4 py-1.5 font-display font-bold text-white text-sm tracking-widest" style={{ background: "linear-gradient(135deg,rgba(120,60,220,0.85),rgba(60,20,120,0.85))", backdropFilter: "blur(10px)", border: "1px solid rgba(180,120,255,0.4)", boxShadow: "0 0 18px rgba(160,80,255,0.35)" }}>
+                  ЭТАП {stage}
+                </div>
+                {isBoss && (
+                  <div className="rounded-xl px-3 py-0.5 font-display font-bold text-white text-[10px] tracking-widest animate-pulse" style={{ background: "rgba(200,30,30,0.9)", border: "1px solid rgba(255,80,80,0.6)" }}>
+                    ⚠️ БОСС
+                  </div>
+                )}
+              </div>
+
+              {/* Right: settings */}
+              <div className="flex flex-col items-end gap-1.5">
+                <button
+                  onClick={e => { e.stopPropagation(); setScreen("settings"); }}
+                  className="w-9 h-9 rounded-2xl flex items-center justify-center transition-all active:scale-90"
+                  style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.12)" }}
+                >
+                  <Icon name="Settings" size={17} className="text-white/70" />
+                </button>
+                <div className="flex items-center gap-1 rounded-xl px-2 py-1" style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <span className="text-[10px]">⚔️</span>
+                  <span className="font-display text-white/60 text-[10px]">{formatNumber(tapDamage * upgradeMultiplier)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* ── ENEMY HP BAR ── */}
+            <div className="relative z-20 px-4 mt-2">
               <div className="flex justify-between items-center mb-1">
-                <span className="font-display text-xs text-muted-foreground">{isBoss ? "⚠️ Босс" : "Враг"}</span>
-                <span className="font-display text-xs text-white">{formatNumber(bossHp)} / {formatNumber(maxBossHp)}</span>
+                <span className="font-display text-[11px] font-bold tracking-widest" style={{ color: isBoss ? "#FF5555" : "#AAAACC" }}>
+                  {isBoss ? `👹 БОСС ЭТАПА ${stage}` : `💀 Монстр`}
+                </span>
+                <span className="font-display text-[11px] text-white/60">{formatNumber(Math.ceil(bossHp))} / {formatNumber(maxBossHp)}</span>
               </div>
-              <div className="h-3 bg-muted rounded-full overflow-hidden border border-border">
-                <div className="h-full hp-bar-fill" style={{ width: `${hpPercent}%` }} />
-              </div>
-            </div>
-
-            {/* Boss */}
-            <div className={`relative z-10 ${bossShake ? "animate-[boss-shake_0.3s_ease]" : ""}`} style={{ marginTop: 20 }}>
-              <img
-                src={BOSS_IMAGE}
-                alt="Enemy"
-                className={`object-contain drop-shadow-2xl ${isBoss ? "w-44 h-44" : "w-36 h-36"}`}
-                style={{
-                  filter: `hue-rotate(${stage * 15}deg) brightness(${isBoss ? 1.2 : 1}) drop-shadow(0 0 20px hsl(0 80% 50% / 0.6))`,
-                  transform: `scale(${Math.min(0.8 + stage * 0.02, 1.5)})`,
-                }}
-                draggable={false}
-              />
-            </div>
-
-            {/* VS */}
-            <div className="z-10 my-1">
-              <span className="font-display text-xs text-muted-foreground tracking-widest">⚔️  ПРОТИВ  ⚔️</span>
-            </div>
-
-            {/* Hero */}
-            <div className={`relative z-10 ${heroTap ? "animate-bounce-tap" : "animate-hero-idle"}`}>
-              <img
-                src={HERO_IMAGE}
-                alt="Hero"
-                className="w-36 h-36 object-contain tap-hero"
-                style={{ filter: "drop-shadow(0 0 15px hsl(38 100% 55% / 0.6))" }}
-                draggable={false}
-              />
-            </div>
-
-            {/* Tap hint */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
-              <div className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-full px-4 py-1.5">
-                <span className="text-sm">👆</span>
-                <span className="font-display text-xs text-white/70 tracking-wide">ТАП УРОН: <span className="text-gold">{formatNumber(tapDamage * upgradeMultiplier)}</span></span>
+              {/* Track */}
+              <div className="h-4 rounded-full overflow-hidden relative" style={{ background: "rgba(0,0,0,0.6)", border: isBoss ? "1px solid rgba(255,80,80,0.5)" : "1px solid rgba(255,255,255,0.08)" }}>
+                {/* Fill */}
+                <div
+                  className="absolute left-0 top-0 bottom-0 rounded-full transition-all duration-200"
+                  style={{
+                    width: `${hpPercent}%`,
+                    background: isBoss
+                      ? "linear-gradient(90deg,#c0392b,#e74c3c,#ff6b6b)"
+                      : "linear-gradient(90deg,#e74c3c,#ff6b35,#ffd700)",
+                    boxShadow: isBoss ? "0 0 12px rgba(255,80,80,0.6)" : "0 0 10px rgba(255,140,0,0.5)",
+                  }}
+                />
+                {/* Shine */}
+                <div className="absolute top-0 left-0 right-0 h-1/2 rounded-full" style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.15), transparent)" }} />
               </div>
             </div>
 
-            {/* Particles */}
+            {/* ── COMBAT AREA ── */}
+            <div className="relative z-10 flex-1 flex flex-col items-center justify-center" style={{ gap: 0 }}>
+
+              {/* ENEMY */}
+              <div
+                className={`relative flex items-center justify-center ${bossShake ? "animate-[boss-shake_0.3s_ease]" : ""}`}
+                style={{ marginBottom: -10 }}
+              >
+                {/* Enemy glow ring */}
+                <div className="absolute inset-0 rounded-full" style={{ background: isBoss ? "radial-gradient(circle, rgba(255,60,60,0.25) 0%, transparent 70%)" : "radial-gradient(circle, rgba(180,0,255,0.2) 0%, transparent 70%)" }} />
+                <img
+                  src={BOSS_IMAGE}
+                  alt="Enemy"
+                  className="object-contain relative z-10"
+                  style={{
+                    width: isBoss ? 160 : 130,
+                    height: isBoss ? 160 : 130,
+                    filter: `hue-rotate(${stage * 18}deg) brightness(${isBoss ? 1.25 : 1.05}) drop-shadow(0 4px 24px rgba(255,60,60,0.55))`,
+                    transform: `scale(${Math.min(0.85 + stage * 0.015, 1.4)})`,
+                  }}
+                  draggable={false}
+                />
+              </div>
+
+              {/* CLASH LINE */}
+              <div className="flex items-center justify-center w-full px-8 z-20" style={{ height: 28 }}>
+                <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(255,120,0,0.6))" }} />
+                <span className="font-display text-[11px] text-white/40 tracking-[0.3em] px-3">БИТВА</span>
+                <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, rgba(255,120,0,0.6))" }} />
+              </div>
+
+              {/* HERO */}
+              <div
+                className={`relative flex items-center justify-center ${heroTap ? "animate-bounce-tap" : "animate-hero-idle"}`}
+                style={{ marginTop: -10 }}
+              >
+                {/* Hero aura */}
+                <div className="absolute inset-0 rounded-full animate-glow-pulse" style={{ background: "radial-gradient(circle, rgba(255,190,0,0.2) 0%, transparent 65%)" }} />
+                <img
+                  src={HERO_IMAGE}
+                  alt="Hero"
+                  className="object-contain relative z-10 tap-hero"
+                  style={{
+                    width: 140,
+                    height: 140,
+                    filter: "drop-shadow(0 4px 20px rgba(255,180,0,0.7)) brightness(1.1)",
+                  }}
+                  draggable={false}
+                />
+              </div>
+            </div>
+
+            {/* ── BOTTOM QUICKBAR ── */}
+            <div className="relative z-20 flex items-center justify-between px-3 pb-3">
+              {/* Tap power pill */}
+              <div className="flex items-center gap-2 rounded-2xl px-3 py-2" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,190,0,0.3)" }}>
+                <span className="text-base">👊</span>
+                <div>
+                  <div className="font-display text-gold font-bold text-sm leading-none">{formatNumber(tapDamage * upgradeMultiplier)}</div>
+                  <div className="font-display text-white/40 text-[9px] tracking-widest">УРОН ТАПА</div>
+                </div>
+              </div>
+
+              {/* Crit chance */}
+              <div className="flex items-center gap-1.5 rounded-2xl px-3 py-2" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,80,80,0.25)" }}>
+                <span className="text-sm">⚡</span>
+                <div>
+                  <div className="font-display text-crimson font-bold text-sm leading-none">{Math.round(critChance * 100)}%</div>
+                  <div className="font-display text-white/40 text-[9px] tracking-widest">КРИТ</div>
+                </div>
+              </div>
+
+              {/* DPS */}
+              <div className="flex items-center gap-1.5 rounded-2xl px-3 py-2" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)", border: "1px solid rgba(0,220,255,0.25)" }}>
+                <span className="text-sm">🔮</span>
+                <div>
+                  <div className="font-display text-cyan font-bold text-sm leading-none">{formatNumber(passiveDps)}</div>
+                  <div className="font-display text-white/40 text-[9px] tracking-widest">DPS/С</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Damage particles */}
             {particles.map(p => (
               <div
                 key={p.id}
                 className="particle"
-                style={{ left: p.x, top: p.y, color: p.color, fontSize: p.value.includes("КРИТ") ? 16 : 14 }}
+                style={{ left: p.x, top: p.y, color: p.color, fontSize: p.value.includes("КРИТ") ? 17 : 14, textShadow: `0 0 8px ${p.color}` }}
               >
                 {p.value}
               </div>
             ))}
           </div>
 
-          {/* Bottom Nav */}
-          <div className="bg-card border-t border-border px-2 py-2 flex items-center justify-around">
+          {/* ── BOTTOM NAV ── */}
+          <div className="flex items-stretch" style={{ background: "rgba(10,8,25,0.97)", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
             {[
-              { id: "shop", label: "Магазин", emoji: "🛒" },
-              { id: "inventory", label: "Инвентарь", emoji: "🎒" },
-              { id: "stats", label: "Статус", emoji: "📊" },
-              { id: "prestige", label: "Престиж", emoji: "🌟" },
+              { id: "shop", label: "Магазин", emoji: "🛒", color: "#FFB800" },
+              { id: "inventory", label: "Инвентарь", emoji: "🎒", color: "#00CCFF" },
+              { id: "stats", label: "Статус", emoji: "📊", color: "#44DD88" },
+              { id: "prestige", label: "Престиж", emoji: "🌟", color: "#BB66FF" },
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setScreen(tab.id as Screen)}
-                className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all active:scale-95 hover:bg-muted"
+                className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 transition-all active:scale-90 relative"
               >
                 <span className="text-xl">{tab.emoji}</span>
-                <span className="font-display text-[10px] text-muted-foreground tracking-wide">{tab.label}</span>
+                <span className="font-display text-[9px] tracking-widest" style={{ color: "rgba(255,255,255,0.45)" }}>{tab.label.toUpperCase()}</span>
+                <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 rounded-full opacity-0 transition-opacity" style={{ background: tab.color }} />
               </button>
             ))}
           </div>
